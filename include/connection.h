@@ -3,6 +3,7 @@
 
 #include <string>
 
+#include "response.h"
 #include "http_parser.h"
 
 class Connection {
@@ -20,7 +21,7 @@ private:
     HttpParser m_parser;
 
     bool readFromSocket();
-    //HttpResponse processRequest(const HttpRequest &request);
+    HttpResponse processRequest(const HttpRequest &request);
     bool writeToSocket();
 };
 #endif

@@ -1,5 +1,4 @@
 #include <sstream>
-#include <map>
 #include <string>
 
 #include "http_parser.h"
@@ -9,12 +8,13 @@ bool HttpParser::feed(std::string &data) {
     m_buffer.append(data); 
     while (true) {
         size_t lineEnd = m_buffer.find("\r\n");
-        if (lineEnd == std::string::npos) {
-            break; 
-        }
 
         switch (m_state) {
-            case ParseState::RequestLine:
+            case ParseState::RequestLine: 
+                if (lineEnd == std::string::npos) {
+                    break; 
+                }
+
                 if (!parseRequestLine())
                     return false;
                 
@@ -22,8 +22,11 @@ bool HttpParser::feed(std::string &data) {
                 logRequestLine();
                 m_state = ParseState::Headers;
                 break;
-            
             case ParseState::Headers: {
+                if (lineEnd == std::string::npos) {
+                    break; 
+                }
+
                 const std::string header = m_buffer.substr(0, lineEnd);
                 if (header.empty()) {
                     m_buffer.erase(0, 2);
@@ -31,9 +34,9 @@ bool HttpParser::feed(std::string &data) {
 
                     auto it = m_request.headers.find("Content-Length");
                     if (it != m_request.headers.end()) {
-                        m_state = ParseState::Complete;
-                    } else {
                         m_state = ParseState::Body;
+                    } else {
+                        m_state = ParseState::Complete;
                     }
                     break;
                 }
@@ -42,10 +45,17 @@ bool HttpParser::feed(std::string &data) {
                 m_buffer.erase(0, lineEnd + 2); // Account for CRLF
                 break;
             }
-            case ParseState::Body:
-                parseBody();
+            case ParseState::Body: {
+                int length = std::stoi(m_request.headers["Content-Length"]);
+                if (m_buffer.size() < length) {
+                    continue;
+                }
+                
+                m_request.body = m_buffer.substr(0, length);
+                logger::logMessage("Body: ", m_request.body);
                 m_state = ParseState::Complete;
                 break;
+            }
             case ParseState::Complete:
                 return true;
             default:
@@ -54,6 +64,10 @@ bool HttpParser::feed(std::string &data) {
         }
     }
     return true;    
+}
+
+HttpRequest HttpParser::getRequest() {
+    return m_request;
 }
 
 bool HttpParser::parseHeader(const std::string &header) {
@@ -69,10 +83,6 @@ bool HttpParser::parseHeader(const std::string &header) {
     m_request.headers.insert({key, val});
 
     return true;
-}
-
-bool HttpParser::parseBody() {
-    // FIXME: Up next: Read in body if it exists! 
 }
 
 bool HttpParser::parseRequestLine() {
@@ -167,8 +177,13 @@ void HttpParser::logRequestLine() {
 void HttpParser::logHeaders() {
     std::string headers;
     for (const auto& pair :m_request.headers) {
-        headers += pair.first + ": " + pair.second + "\n";
+        headers += "\t" + pair.first + ": " + pair.second + "\n";
     }
+    
+    if (!headers.empty()) {
+        headers.pop_back();
+    }
+
     logger::logMessage("Headers: \n", headers);
 }
 

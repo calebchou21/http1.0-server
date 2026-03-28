@@ -14,7 +14,7 @@ class HttpParser {
 
         bool feed(std::string &data);
         bool isComplete();
-        bool getRequest();
+        HttpRequest getRequest();
 
     private:
         enum class ParseState {
@@ -31,7 +31,6 @@ class HttpParser {
 
         bool parseRequestLine();
         bool parseHeader(const std::string &header);
-        bool parseBody();
         bool isValidPath(const std::filesystem::path &path);
 
         HttpRequestMethod strToRequestMethod(const std::string &str);
