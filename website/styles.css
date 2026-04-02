@@ -31,3 +31,18 @@ p {
     max-width: 800px;
     padding: 40px;
 }
+
+.skel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    color: #ff423a;
+}
+
+.postoffice {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
