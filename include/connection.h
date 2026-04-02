@@ -20,12 +20,10 @@ private:
     std::string m_writeBuffer;
     HttpParser m_parser;
     static constexpr std::string_view SERVE_FROM = "website";
-   
-    bool isModifiedSince(const std::filesystem::path &path, const std::string &headerDate);
+    
+    HttpResponse handlePost(const HttpRequest &request);
     bool readFromSocket();
     HttpResponse processRequest(const HttpRequest &request);
-    std::string serializeResponse(const HttpResponse &response);
     bool writeToSocket(const std::string &serializedResponse);
-    std::string_view statusMethodToPhrase(HttpStatus status);
 };
 #endif

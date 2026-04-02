@@ -1,7 +1,6 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/socket.h>
-#include <sys/sendfile.h>
 #include <netdb.h>
 #include <netinet/in.h>
 #include <unistd.h>
@@ -10,9 +9,7 @@
 #include <system_error>
 #include <errno.h>
 #include <string.h>
-#include <sys/sendfile.h>
 #include <fcntl.h>
-#include <filesystem>
 #include <unistd.h>
 
 #include "logger.h"
