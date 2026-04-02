@@ -176,6 +176,8 @@ std::string HttpParser::methodToString(HttpRequestMethod method) {
             return "GET";
         case HttpRequestMethod::POST:
             return "POST";
+        case HttpRequestMethod::HEAD:
+            return "HEAD";
         case HttpRequestMethod::UNKNOWN:
             return "UNKNOWN";
     }

@@ -20,14 +20,19 @@ HttpResponse FileService::serveFile(const HttpRequest &request, const std::files
     std::string lastModifiedStr = HttpUtils::formatHttpDate(lastModified);
     
     HttpResponse response;
+
     auto it = request.headers.find("If-Modified-Since");
+    // "If an If-Modified-Since header field is included with a HEAD request, it should be ignored."
     if (it != request.headers.end() && request.method != HttpRequestMethod::HEAD) {
-        if (!isNotModifiedSince(path, it->second)) {
+        if (!isModifiedSince(path, it->second)) {
             response = HttpResponse::create(HttpStatus::NOT_MODIFIED);
+        } else {
+            std::string body = getFileContent(path);
+            response = HttpResponse::create(HttpStatus::OK, body);
         }
     } else {
         std::string body = getFileContent(path);
-        HttpResponse response = HttpResponse::create(HttpStatus::OK, body);
+        response = HttpResponse::create(HttpStatus::OK, body);
     }
     
     if (request.method == HttpRequestMethod::HEAD) {
@@ -76,7 +81,7 @@ std::string FileService::getMimeType(const std::filesystem::path &path) {
     return "application/octet-stream";
 }
 
-bool FileService::isNotModifiedSince(const std::filesystem::path &path, const std::string &headerDate) {
+bool FileService::isModifiedSince(const std::filesystem::path &path, const std::string &headerDate) {
     std::time_t fileTime = getLastWriteTime(path);
     std::time_t headerTime = HttpUtils::parseHttpDate(headerDate);
     return fileTime > headerTime;

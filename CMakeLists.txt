@@ -6,6 +6,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+file(COPY tests/static_test_files DESTINATION ${CMAKE_BINARY_DIR})
+
 add_library(http_core
     src/http_server.cpp
     src/http_parser.cpp

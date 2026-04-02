@@ -7,9 +7,9 @@
 class ResponseSerializer {
     public:
         static std::string serializeResponse(const HttpResponse &response);
+        static std::string_view statusMethodToPhrase(HttpStatus status);
 
     private:
-        static std::string_view statusMethodToPhrase(HttpStatus status);
         static std::string serializeHeaders(const HttpResponse &response);
 };
 #endif
