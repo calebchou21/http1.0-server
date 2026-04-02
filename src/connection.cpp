@@ -76,7 +76,7 @@ HttpResponse Connection::processRequest(const HttpRequest &request) {
         case HttpRequestMethod::HEAD:
             return FileService::serveFile(request, path);
         case HttpRequestMethod::POST:
-            logger::logMessage("I need to implement posts!");
+            return handlePost(request);
         default:
             HttpResponse response = HttpResponse::create(HttpStatus::NOT_IMPLEMENTED);
             response.headers["Allow"] = "GET, HEAD, POST";
@@ -86,6 +86,14 @@ HttpResponse Connection::processRequest(const HttpRequest &request) {
     if (request.method == HttpRequestMethod::GET) {
         return FileService::serveFile(request, path);
     }
+}
+
+HttpResponse Connection::handlePost(const HttpRequest &request) {
+    if (request.path == "/echo") {
+        logger::logMessage("Posted: ", request.body);
+    }
+    
+    return HttpResponse::create(HttpStatus::OK);
 }
 
 bool Connection::writeToSocket(const std::string &serializedResponse) {
