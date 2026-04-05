@@ -14,6 +14,6 @@ Build with cmake and try going to `localhost:8080` on your browser!
 
 ## Testing
 
-I've included a rudimentary test suite to make sure that some harder to catch HTTP1.X functionality works as expected.
+I've included a rudimentary test suite to make sure that some harder to catch HTTP1.0 functionality works as expected.
 
 To run tests, use `ctest --test-dir build -V`
